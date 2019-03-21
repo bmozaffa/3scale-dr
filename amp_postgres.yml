@@ -2551,7 +2551,7 @@ objects:
       app: ${APP_LABEL}
     name: system-database
   stringData:
-    URL: postgresql://postgres:${SYSTEM_DATABASE_PASSWORD}@system-database:5432/system
+    URL: postgresql://system:${SYSTEM_DATABASE_PASSWORD}@system-database:5432/system
     USER_PASSWORD: ${SYSTEM_DATABASE_PASSWORD}
   type: Opaque
 - apiVersion: v1
@@ -2758,7 +2758,7 @@ objects:
       app: ${APP_LABEL}
     name: zync
   stringData:
-    DATABASE_URL: postgresql://postgres:${ZYNC_DATABASE_PASSWORD}@zync-database:5432/zync_production
+    DATABASE_URL: postgresql://zync:${ZYNC_DATABASE_PASSWORD}@zync-database:5432/zync_production
     SECRET_KEY_BASE: ${ZYNC_SECRET_KEY_BASE}
     ZYNC_AUTHENTICATION_TOKEN: ${ZYNC_AUTHENTICATION_TOKEN}
     ZYNC_DATABASE_PASSWORD: ${ZYNC_DATABASE_PASSWORD}
