@@ -206,14 +206,12 @@ objects:
       app: ${APP_LABEL}
     name: backend-redis
   spec:
+    type: ExternalName
+    externalName: redisdb1.redistest.svc.cluster.local:14059
     ports:
     - port: 6379
       protocol: TCP
-      targetPort: 6379
-    selector:
-      deploymentConfig: backend-redis
-  status:
-    loadBalancer: {}
+      targetPort: 14059
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
