@@ -196,31 +196,6 @@ objects:
         type: ""
   status:
     dockerImageRepository: ""
-- apiVersion: image.openshift.io/v1
-  kind: ImageStream
-  metadata:
-    creationTimestamp: null
-    labels:
-      3scale.component: system
-      3scale.component-element: postgresql
-      app: ${APP_LABEL}
-    name: postgresql
-  spec:
-    lookupPolicy:
-      local: false
-    tags:
-    - annotations: null
-      from:
-        kind: DockerImage
-        name: ${POSTGRESQL_IMAGE}
-      generation: null
-      importPolicy:
-        insecure: ${{IMAGESTREAM_TAG_IMPORT_INSECURE}}
-      name: "10"
-      referencePolicy:
-        type: ""
-  status:
-    dockerImageRepository: ""
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
@@ -996,7 +971,7 @@ objects:
                 name: system-database
           - name: POSTGRESQL_DATABASE
             value: system
-          image: ' '
+          image: postgresql
           imagePullPolicy: IfNotPresent
           livenessProbe:
             initialDelaySeconds: 30
@@ -1041,6 +1016,7 @@ objects:
         from:
           kind: ImageStreamTag
           name: postgresql:10
+          namespace: openshift
       type: ImageChange
   status:
     availableReplicas: 0
@@ -3145,7 +3121,7 @@ objects:
                 name: zync
           - name: POSTGRESQL_DATABASE
             value: zync_production
-          image: ' '
+          image: postgresql
           imagePullPolicy: IfNotPresent
           livenessProbe:
             initialDelaySeconds: 30
@@ -3189,6 +3165,7 @@ objects:
         from:
           kind: ImageStreamTag
           name: postgresql:10
+          namespace: openshift
       type: ImageChange
   status:
     availableReplicas: 0
@@ -3771,7 +3748,7 @@ parameters:
 - description: Postgresql image to use
   name: POSTGRESQL_IMAGE
   required: true
-  value: crunchydata/crunchy-postgres:centos7-10.6-2.2.0
+  value: postgresql
 - description: Memcached image to use
   name: MEMCACHED_IMAGE
   required: true
