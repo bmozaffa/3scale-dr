@@ -196,22 +196,6 @@ objects:
         type: ""
   status:
     dockerImageRepository: ""
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      3scale.component: backend
-      3scale.component-element: redis
-      app: ${APP_LABEL}
-    name: backend-redis
-  spec:
-    type: ExternalName
-    externalName: redisdb1.redistest.svc.cluster.local:14059
-    ports:
-    - port: 6379
-      protocol: TCP
-      targetPort: 14059
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
   metadata:
@@ -661,10 +645,10 @@ objects:
   stringData:
     REDIS_QUEUES_SENTINEL_HOSTS: ""
     REDIS_QUEUES_SENTINEL_ROLE: ""
-    REDIS_QUEUES_URL: redis://admin:redis@backend-redis:6379/1
+    REDIS_QUEUES_URL: redis://admin:redis@redisdb1.redistest.svc.cluster.local:14059/1
     REDIS_STORAGE_SENTINEL_HOSTS: ""
     REDIS_STORAGE_SENTINEL_ROLE: ""
-    REDIS_STORAGE_URL: redis://admin:redis@backend-redis:6379/0
+    REDIS_STORAGE_URL: redis://admin:redis@redisdb1.redistest.svc.cluster.local:14059/0
   type: Opaque
 - apiVersion: v1
   kind: Secret
@@ -892,38 +876,6 @@ objects:
       weight: null
   status:
     ingress: null
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      3scale.component: system
-      3scale.component-element: database
-      app: ${APP_LABEL}
-    name: system-database
-  spec:
-    type: ExternalName
-    externalName: crunchydb1.crunchytest.svc.cluster.local:5432
-    ports:
-    - port: 5432
-      protocol: TCP
-      targetPort: 5432
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      3scale.component: system
-      3scale.component-element: redis
-      app: ${APP_LABEL}
-    name: system-redis
-  spec:
-    type: ExternalName
-    externalName: redisdb1.redistest.svc.cluster.local:14059
-    ports:
-    - port: 6379
-      protocol: TCP
-      targetPort: 14059
 - apiVersion: v1
   kind: Service
   metadata:
@@ -2527,7 +2479,7 @@ objects:
       app: ${APP_LABEL}
     name: system-redis
   stringData:
-    URL: redis://admin:redis@system-redis:6379/1
+    URL: redis://admin:redis@redisdb1.redistest.svc.cluster.local:14059/1
   type: Opaque
 - apiVersion: v1
   kind: Secret
@@ -2551,7 +2503,7 @@ objects:
       app: ${APP_LABEL}
     name: system-database
   stringData:
-    URL: postgresql://system:${SYSTEM_DATABASE_PASSWORD}@system-database:5432/system
+    URL: postgresql://system:${SYSTEM_DATABASE_PASSWORD}@crunchydb1.crunchytest.svc.cluster.local:5432/system
     USER_PASSWORD: ${SYSTEM_DATABASE_PASSWORD}
   type: Opaque
 - apiVersion: v1
@@ -2734,22 +2686,6 @@ objects:
   status:
     loadBalancer: {}
 - apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      3scale.component: zync
-      3scale.component-element: database
-      app: ${APP_LABEL}
-    name: zync-database
-  spec:
-    type: ExternalName
-    externalName: crunchydb1.crunchytest.svc.cluster.local:5432
-    ports:
-    - port: 5432
-      protocol: TCP
-      targetPort: 5432
-- apiVersion: v1
   kind: Secret
   metadata:
     creationTimestamp: null
@@ -2758,7 +2694,7 @@ objects:
       app: ${APP_LABEL}
     name: zync
   stringData:
-    DATABASE_URL: postgresql://zync:${ZYNC_DATABASE_PASSWORD}@zync-database:5432/zync_production
+    DATABASE_URL: postgresql://zync:${ZYNC_DATABASE_PASSWORD}@crunchydb1.crunchytest.svc.cluster.local:5432/zync_production
     SECRET_KEY_BASE: ${ZYNC_SECRET_KEY_BASE}
     ZYNC_AUTHENTICATION_TOKEN: ${ZYNC_AUTHENTICATION_TOKEN}
     ZYNC_DATABASE_PASSWORD: ${ZYNC_DATABASE_PASSWORD}
@@ -3131,8 +3067,8 @@ objects:
       app: ${APP_LABEL}
     name: apicast-redis
   stringData:
-    PRODUCTION_URL: redis://admin:redis@system-redis:6379/1
-    STAGING_URL: redis://admin:redis@system-redis:6379/2
+    PRODUCTION_URL: redis://admin:redis@redisdb1.redistest.svc.cluster.local:14059/1
+    STAGING_URL: redis://admin:redis@redisdb1.redistest.svc.cluster.local:14059/2
   type: Opaque
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
