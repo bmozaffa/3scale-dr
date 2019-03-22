@@ -3520,8 +3520,8 @@ parameters:
 - description: URL to redis instance for REDIS_APICAST_PRODUCTION_URL
   name: REDIS_APICAST_PRODUCTION_URL
   required: true
-  value: "redis://system-redis:6379/0"
+  value: "redis://system-redis:6379/1"
 - description: URL to redis instance for REDIS_APICAST_STAGING_URL
   name: REDIS_APICAST_STAGING_URL
   required: true
-  value: "redis://admin:redis@redisdb5.redistest2.svc.cluster.local:17446/redisdb5"
+  value: "redis://system-redis:6379/2"
