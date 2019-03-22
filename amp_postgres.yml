@@ -645,10 +645,10 @@ objects:
   stringData:
     REDIS_QUEUES_SENTINEL_HOSTS: ""
     REDIS_QUEUES_SENTINEL_ROLE: ""
-    REDIS_QUEUES_URL: redis://admin:redis@redisdb1.redistest.svc.cluster.local:14059/1
+    REDIS_QUEUES_URL: ${REDIS_BACKEND_QUEUES_URL}
     REDIS_STORAGE_SENTINEL_HOSTS: ""
     REDIS_STORAGE_SENTINEL_ROLE: ""
-    REDIS_STORAGE_URL: redis://admin:redis@redisdb1.redistest.svc.cluster.local:14059/0
+    REDIS_STORAGE_URL: ${REDIS_BACKEND_STORAGE_URL}
   type: Opaque
 - apiVersion: v1
   kind: Secret
@@ -2479,7 +2479,7 @@ objects:
       app: ${APP_LABEL}
     name: system-redis
   stringData:
-    URL: redis://admin:redis@redisdb1.redistest.svc.cluster.local:14059/1
+    URL: ${REDIS_SYSTEM}
   type: Opaque
 - apiVersion: v1
   kind: Secret
@@ -3067,8 +3067,8 @@ objects:
       app: ${APP_LABEL}
     name: apicast-redis
   stringData:
-    PRODUCTION_URL: redis://admin:redis@redisdb1.redistest.svc.cluster.local:14059/1
-    STAGING_URL: redis://admin:redis@redisdb1.redistest.svc.cluster.local:14059/2
+    PRODUCTION_URL: ${REDIS_APICAST_PRODUCTION_URL}
+    STAGING_URL: ${REDIS_APICAST_STAGING_URL}
   type: Opaque
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
@@ -3334,3 +3334,23 @@ parameters:
   name: WILDCARD_POLICY
   required: true
   value: None
+- description: URL to redis instance for REDIS_BACKEND_QUEUES_URL
+  name: REDIS_BACKEND_QUEUES_URL
+  required: true
+  value: "redis://admin:redis@redisdb1b.redistest.svc.cluster.local:17843/redisdb1b"
+- description: URL to redis instance for REDIS_BACKEND_STORAGE_URL
+  name: REDIS_BACKEND_STORAGE_URL
+  required: true
+  value: "redis://admin:redis@redisdb2.redistest.svc.cluster.local:13745/redisdb2"
+- description: URL to redis instance for REDIS_SYSTEM
+  name: REDIS_SYSTEM
+  required: true
+  value: "redis://admin:redis@redisdb3.redistest2.svc.cluster.local:11658/redisdb3"
+- description: URL to redis instance for REDIS_APICAST_PRODUCTION_URL
+  name: REDIS_APICAST_PRODUCTION_URL
+  required: true
+  value: "redis://admin:redis@redisdb4.redistest2.svc.cluster.local:10247/redisdb4"
+- description: URL to redis instance for REDIS_APICAST_STAGING_URL
+  name: REDIS_APICAST_STAGING_URL
+  required: true
+  value: "redis://admin:redis@redisdb5.redistest2.svc.cluster.local:17446/redisdb5"
