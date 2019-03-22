@@ -3517,14 +3517,10 @@ parameters:
   name: REDIS_BACKEND_STORAGE_URL
   required: true
   value: "redis://admin:redis@redisdb2.redistest.svc.cluster.local:13745/redisdb2"
-- description: URL to redis instance for REDIS_SYSTEM
-  name: REDIS_SYSTEM
-  required: true
-  value: "redis://system-redis:6379/0"
 - description: URL to redis instance for REDIS_APICAST_PRODUCTION_URL
   name: REDIS_APICAST_PRODUCTION_URL
   required: true
-  value: "redis://admin:redis@redisdb4.redistest2.svc.cluster.local:10247/redisdb4"
+  value: "redis://system-redis:6379/0"
 - description: URL to redis instance for REDIS_APICAST_STAGING_URL
   name: REDIS_APICAST_STAGING_URL
   required: true
