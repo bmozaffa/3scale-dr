@@ -2479,7 +2479,7 @@ objects:
       app: ${APP_LABEL}
     name: system-redis
   stringData:
-    URL: ${REDIS_SYSTEM}
+    URL: ${REDIS_APICAST_PRODUCTION_URL}
   type: Opaque
 - apiVersion: v1
   kind: Secret
