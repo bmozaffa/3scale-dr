@@ -918,10 +918,10 @@ objects:
   stringData:
     REDIS_QUEUES_SENTINEL_HOSTS: ""
     REDIS_QUEUES_SENTINEL_ROLE: ""
-    REDIS_QUEUES_URL: ${REDIS_BACKEND_QUEUES_URL}
+    REDIS_QUEUES_URL: redis://backend-redis:6379/1
     REDIS_STORAGE_SENTINEL_HOSTS: ""
     REDIS_STORAGE_SENTINEL_ROLE: ""
-    REDIS_STORAGE_URL: ${REDIS_BACKEND_STORAGE_URL}
+    REDIS_STORAGE_URL: redis://backend-redis:6379/0
   type: Opaque
 - apiVersion: v1
   kind: Secret
@@ -2771,7 +2771,7 @@ objects:
       app: ${APP_LABEL}
     name: system-redis
   stringData:
-    URL: ${REDIS_APICAST_PRODUCTION_URL}
+    URL: redis://system-redis:6379/1
   type: Opaque
 - apiVersion: v1
   kind: Secret
@@ -3359,8 +3359,8 @@ objects:
       app: ${APP_LABEL}
     name: apicast-redis
   stringData:
-    PRODUCTION_URL: ${REDIS_APICAST_PRODUCTION_URL}
-    STAGING_URL: ${REDIS_APICAST_STAGING_URL}
+    PRODUCTION_URL: redis://system-redis:6379/1
+    STAGING_URL: redis://system-redis:6379/2
   type: Opaque
 - apiVersion: apps.openshift.io/v1
   kind: DeploymentConfig
