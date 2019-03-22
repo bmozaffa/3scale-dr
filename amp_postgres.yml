@@ -824,113 +824,6 @@ objects:
     creationTimestamp: null
     labels:
       3scale.component: system
-      3scale.component-element: database
-      app: ${APP_LABEL}
-    name: system-database
-  spec:
-    replicas: 1
-    selector:
-      deploymentConfig: system-database
-    strategy:
-      resources: {}
-      type: Recreate
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          3scale.component: system
-          3scale.component-element: database
-          app: ${APP_LABEL}
-          deploymentConfig: system-database
-      spec:
-        containers:
-        - env:
-          - name: POSTGRESQL_USER
-            value: system
-          - name: POSTGRESQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                key: USER_PASSWORD
-                name: system-database
-          - name: POSTGRESQL_DATABASE
-            value: system
-          image: postgresql
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            initialDelaySeconds: 30
-            tcpSocket:
-              port: 5432
-            timeoutSeconds: 1
-          name: postgresql
-          ports:
-          - containerPort: 5432
-            protocol: TCP
-          readinessProbe:
-            exec:
-              command:
-              - /bin/sh
-              - -i
-              - -c
-              - psql -h 127.0.0.1 -U system -q -d system -c 'SELECT 1'
-            initialDelaySeconds: 5
-            timeoutSeconds: 1
-          resources:
-            limits:
-              cpu: 250m
-              memory: 2G
-            requests:
-              cpu: 50m
-              memory: 250M
-          volumeMounts:
-          - mountPath: /var/lib/pgsql/data
-            name: system-database-data
-        restartPolicy: Always
-        volumes:
-        - name: system-database-data
-          persistentVolumeClaim:
-            claimName: system-database-data
-    test: false
-    triggers:
-    - type: ConfigChange
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - postgresql
-        from:
-          kind: ImageStreamTag
-          name: postgresql:10
-          namespace: openshift
-      type: ImageChange
-  status:
-    availableReplicas: 0
-    latestVersion: 0
-    observedGeneration: 0
-    replicas: 0
-    unavailableReplicas: 0
-    updatedReplicas: 0
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    creationTimestamp: null
-    labels:
-      3scale.component: system
-      3scale.component-element: database
-      app: ${APP_LABEL}
-    name: system-database-data
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    dataSource: null
-    resources:
-      requests:
-        storage: 1Gi
-  status: {}
-- apiVersion: apps.openshift.io/v1
-  kind: DeploymentConfig
-  metadata:
-    creationTimestamp: null
-    labels:
-      3scale.component: system
       3scale.component-element: memcache
       app: ${APP_LABEL}
     name: system-memcache
@@ -1139,25 +1032,6 @@ objects:
       weight: null
   status:
     ingress: null
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      3scale.component: system
-      3scale.component-element: database
-      app: ${APP_LABEL}
-    name: system-database
-  spec:
-    ports:
-    - name: postgresql
-      port: 5432
-      protocol: TCP
-      targetPort: 5432
-    selector:
-      deploymentConfig: system-database
-  status:
-    loadBalancer: {}
 - apiVersion: v1
   kind: Service
   metadata:
@@ -2804,7 +2678,7 @@ objects:
       app: ${APP_LABEL}
     name: system-database
   stringData:
-    URL: postgresql://system:${SYSTEM_DATABASE_PASSWORD}@system-database:5432/system
+    URL: postgresql://system:${SYSTEM_DATABASE_PASSWORD}@crunchydb1.crunchytest.svc.cluster.local:5432/system
     USER_PASSWORD: ${SYSTEM_DATABASE_PASSWORD}
   type: Opaque
 - apiVersion: v1
