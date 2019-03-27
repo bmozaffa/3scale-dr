@@ -257,106 +257,6 @@ objects:
   metadata:
     creationTimestamp: null
     labels:
-      3scale.component: system
-      3scale.component-element: redis
-      app: ${APP_LABEL}
-    name: system-redis
-  spec:
-    replicas: 1
-    selector:
-      deploymentConfig: system-redis
-    strategy:
-      resources: {}
-      type: Recreate
-    template:
-      metadata:
-        creationTimestamp: null
-        labels:
-          3scale.component: system
-          3scale.component-element: redis
-          app: ${APP_LABEL}
-          deploymentConfig: system-redis
-      spec:
-        containers:
-        - args:
-          - /etc/redis.d/redis.conf
-          - --daemonize
-          - "no"
-          command:
-          - /opt/rh/rh-redis32/root/usr/bin/redis-server
-          image: ${REDIS_IMAGE}
-          imagePullPolicy: IfNotPresent
-          livenessProbe:
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            tcpSocket:
-              port: 6379
-          name: system-redis
-          readinessProbe:
-            exec:
-              command:
-              - container-entrypoint
-              - bash
-              - -c
-              - redis-cli set liveness-probe "`date`" | grep OK
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 5
-          resources:
-            limits:
-              cpu: 500m
-              memory: 32Gi
-            requests:
-              cpu: 150m
-              memory: 256Mi
-          terminationMessagePath: /dev/termination-log
-          volumeMounts:
-          - mountPath: /var/lib/redis/data
-            name: system-redis-storage
-          - mountPath: /etc/redis.d/
-            name: redis-config
-        volumes:
-        - name: system-redis-storage
-          persistentVolumeClaim:
-            claimName: system-redis-storage
-        - configMap:
-            items:
-            - key: redis.conf
-              path: redis.conf
-            name: redis-config
-          name: redis-config
-    test: false
-    triggers:
-    - type: ConfigChange
-  status:
-    availableReplicas: 0
-    latestVersion: 0
-    observedGeneration: 0
-    replicas: 0
-    unavailableReplicas: 0
-    updatedReplicas: 0
-- apiVersion: v1
-  kind: PersistentVolumeClaim
-  metadata:
-    creationTimestamp: null
-    labels:
-      3scale.component: system
-      3scale.component-element: redis
-      app: ${APP_LABEL}
-    name: system-redis-storage
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    dataSource: null
-    resources:
-      requests:
-        storage: 1Gi
-  status: {}
-- apiVersion: apps.openshift.io/v1
-  kind: DeploymentConfig
-  metadata:
-    creationTimestamp: null
-    labels:
       3scale.component: backend
       3scale.component-element: cron
       app: ${APP_LABEL}
@@ -1038,25 +938,6 @@ objects:
     creationTimestamp: null
     labels:
       3scale.component: system
-      3scale.component-element: redis
-      app: ${APP_LABEL}
-    name: system-redis
-  spec:
-    ports:
-    - name: redis
-      port: 6379
-      protocol: TCP
-      targetPort: 6379
-    selector:
-      deploymentConfig: system-redis
-  status:
-    loadBalancer: {}
-- apiVersion: v1
-  kind: Service
-  metadata:
-    creationTimestamp: null
-    labels:
-      3scale.component: system
       3scale.component-element: sphinx
       app: ${APP_LABEL}
     name: system-sphinx
@@ -1340,7 +1221,7 @@ objects:
               valueFrom:
                 secretKeyRef:
                   key: URL
-                  name: system-redis
+                  name: system-redis          
             - name: MEMCACHE_SERVERS
               valueFrom:
                 secretKeyRef:
@@ -1569,6 +1450,11 @@ objects:
               secretKeyRef:
                 key: URL
                 name: system-redis
+          - name: MESSAGE_BUS_REDIS_URL
+            valueFrom:
+              secretKeyRef:
+                key: URL
+                name: system-redis  
           - name: MEMCACHE_SERVERS
             valueFrom:
               secretKeyRef:
@@ -1815,6 +1701,11 @@ objects:
                 key: SECRET_KEY_BASE
                 name: system-app
           - name: REDIS_URL
+            valueFrom:
+              secretKeyRef:
+                key: URL
+                name: system-redis
+          - name: MESSAGE_BUS_REDIS_URL
             valueFrom:
               secretKeyRef:
                 key: URL
@@ -2068,6 +1959,11 @@ objects:
               secretKeyRef:
                 key: URL
                 name: system-redis
+          - name: MESSAGE_BUS_REDIS_URL
+            valueFrom:
+              secretKeyRef:
+                key: URL
+                name: system-redis  
           - name: MEMCACHE_SERVERS
             valueFrom:
               secretKeyRef:
@@ -2389,6 +2285,11 @@ objects:
               secretKeyRef:
                 key: REDIS_STORAGE_URL
                 name: backend-redis
+          - name: MESSAGE_BUS_REDIS_URL
+            valueFrom:
+              secretKeyRef:
+                key: URL
+                name: system-redis
           - name: APICAST_BACKEND_ROOT_ENDPOINT
             valueFrom:
               secretKeyRef:
@@ -2678,7 +2579,7 @@ objects:
       app: ${APP_LABEL}
     name: system-database
   stringData:
-    URL: postgresql://system:${SYSTEM_DATABASE_PASSWORD}@crunchydb1.crunchytest.svc.cluster.local:5432/system
+    URL: postgresql://system:${SYSTEM_DATABASE_PASSWORD}@${SYSTEM_POSTGRES_DB_URL}
     USER_PASSWORD: ${SYSTEM_DATABASE_PASSWORD}
   type: Opaque
 - apiVersion: v1
@@ -2869,7 +2770,7 @@ objects:
       app: ${APP_LABEL}
     name: zync
   stringData:
-    DATABASE_URL: postgresql://zync:${ZYNC_DATABASE_PASSWORD}@crunchydb1.crunchytest.svc.cluster.local:5432/zync_production
+    DATABASE_URL: postgresql://zync:${ZYNC_DATABASE_PASSWORD}@${ZYNC_DATABASE_URL}
     SECRET_KEY_BASE: ${ZYNC_SECRET_KEY_BASE}
     ZYNC_AUTHENTICATION_TOKEN: ${ZYNC_AUTHENTICATION_TOKEN}
     ZYNC_DATABASE_PASSWORD: ${ZYNC_DATABASE_PASSWORD}
@@ -3520,8 +3421,18 @@ parameters:
 - description: URL to redis instance for REDIS_APICAST_PRODUCTION_URL
   name: REDIS_APICAST_PRODUCTION_URL
   required: true
-  value: "redis://system-redis:6379/0"
+  value: "redis://admin:redis@redisdb3.redistest2.svc.cluster.local:13972/redisdb3"
 - description: URL to redis instance for REDIS_APICAST_STAGING_URL
   name: REDIS_APICAST_STAGING_URL
   required: true
   value: "redis://admin:redis@redisdb5.redistest2.svc.cluster.local:17446/redisdb5"
+- description: Host,Port,DB name for zync database for ZYNC_DATABASE_URL
+  name: ZYNC_DATABASE_URL
+  required: true
+  value: "crunchydb1.crunchytest.svc.cluster.local:5432/zync_production"
+- description: Host,Port,DB name for system database for SYSTEM_POSTGRES_DB_URL
+  name: SYSTEM_POSTGRES_DB_URL
+  required: true
+  value: "crunchydb1.crunchytest.svc.cluster.local:5432/system"
+  
+  
