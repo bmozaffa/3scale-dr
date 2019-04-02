@@ -1,0 +1,28 @@
+apiVersion: "app.redislabs.com/v1alpha1"
+kind: "RedisEnterpriseCluster"
+metadata:
+  name: "redis-ent-cluster"
+spec:
+  nodes: 3
+  persistentSpec:
+    enabled: true
+    storageClassName: "glusterfs-storage" # ! edit according to infrastructure
+    volumeSize: "1Gi" # optional
+  uiServiceType: LoadBalancer
+  username: "admin@redhat.com"
+  redisEnterpriseNodeResources:
+    limits:
+      cpu: "500m"
+      memory: 3Gi
+    requests:
+      cpu: "500m"
+      memory: 3Gi
+  redisEnterpriseImageSpec:
+    imagePullPolicy:  IfNotPresent
+    repository:       redislabs/redis
+    versionTag:       5.4.0-19.rhel7-openshift
+  redisEnterpriseServicesRiggerImageSpec:
+    imagePullPolicy:  IfNotPresent
+    repository:       redislabs/k8s-controller
+    versionTag:       109_5c9af60.rhel7
+
