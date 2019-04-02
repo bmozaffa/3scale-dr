@@ -2579,7 +2579,7 @@ objects:
       app: ${APP_LABEL}
     name: system-database
   stringData:
-    URL: postgresql://system:${SYSTEM_DATABASE_PASSWORD}@${SYSTEM_POSTGRES_DB_URL}
+    URL: postgresql://system:${SYSTEM_DATABASE_PASSWORD}@${SYSTEM_DB_URL}
     USER_PASSWORD: ${SYSTEM_DATABASE_PASSWORD}
   type: Opaque
 - apiVersion: v1
@@ -3282,19 +3282,19 @@ parameters:
   value: "null"
 - name: AMP_BACKEND_IMAGE
   required: true
-  value: quay.io/3scale/apisonator:nightly
+  value: quay.io/mmikhail/apisonator:stable
 - name: AMP_ZYNC_IMAGE
   required: true
-  value: quay.io/3scale/zync:nightly
+  value: quay.io/mmikhail/zync:stable
 - name: AMP_APICAST_IMAGE
   required: true
-  value: quay.io/3scale/apicast:nightly
+  value:quay.io/mmikhail/apicast:stable
 - name: AMP_ROUTER_IMAGE
   required: true
-  value: quay.io/3scale/wildcard-router:nightly
+  value: quay.io/mmikhail/wildcard-router:stable
 - name: AMP_SYSTEM_IMAGE
   required: true
-  value: quay.io/3scale/porta:nightly
+  value: quay.io/mmikhail/porta:stable
 - description: Postgresql image to use
   name: POSTGRESQL_IMAGE
   required: true
@@ -3430,8 +3430,8 @@ parameters:
   name: ZYNC_DATABASE_URL
   required: true
   value: "crunchydb1.crunchytest.svc.cluster.local:5432/zync_production"
-- description: Host,Port,DB name for system database for SYSTEM_POSTGRES_DB_URL
-  name: SYSTEM_POSTGRES_DB_URL
+- description: Host,Port,DB name for system database for SYSTEM_DB_URL
+  name: SYSTEM_DB_URL
   required: true
   value: "crunchydb1.crunchytest.svc.cluster.local:5432/system"
   
