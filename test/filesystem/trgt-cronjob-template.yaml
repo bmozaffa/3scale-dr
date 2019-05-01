@@ -1,0 +1,78 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  annotations:
+    description: Rsync job for remote OpenShift cluster
+  creationTimestamp: null
+  name: rsync-oc-client-job
+objects:
+- apiVersion: batch/v1beta1
+  kind: CronJob
+  metadata:
+    labels:
+      app: oc-client
+    name: oc-client-cron
+  spec:
+    successfulJobsHistoryLimit: 1
+    failedJobsHistoryLimit: 1
+    schedule: ${RSYNC_JOB_SCHEDULE}
+    jobTemplate:
+      spec:
+        template:
+          metadata:
+            annotations:
+              alpha.image.policy.openshift.io/resolve-names: '*'
+          labels:
+            app: oc-client
+            parent: oc-client-cron
+          spec:
+            parallelism: 1    
+            completions: 1
+            restartPolicy: Never 
+            containers:
+              - env:
+                  - name: OC_URL
+                    valueFrom:
+                      secretKeyRef:
+                        key: URL
+                        name: oc-client
+                  - name: OC_AUTH_TOKEN
+                    valueFrom:
+                      secretKeyRef:
+                        key: AuthToken
+                        name: oc-client
+                volumeMounts:
+                  - mountPath: /opt/app-root/backup
+                    name: backup-storage
+                image: oc-client:latest
+                imagePullPolicy: IfNotPresent
+                name: oc-client
+                command: ["/usr/bin/bash","-c","oc_rsync.sh ${SOURCE_PROJECT_NAME} ${SOURCE_POD_PREFIX} ${SOURCE_DIR} /opt/app-root/backup"]
+            volumes:
+              - name: backup-storage
+                persistentVolumeClaim:
+                  claimName: ${PVC_NAME}
+            dnsPolicy: ClusterFirst
+            securityContext: {}
+parameters:
+- description: Schedule for rsync job in Cron Format
+  name: PVC_NAME
+  required: true
+  value: temp-pvc 
+- description: Schedule for rsync job in Cron Format
+  name: RSYNC_JOB_SCHEDULE
+  required: true
+  value: "*/1 * * * *"
+- description: Schedule for rsync job in Cron Format
+  name: SOURCE_PROJECT_NAME
+  required: true
+  value: try-3scale
+- description: Schedule for rsync job in Cron Format
+  name: SOURCE_POD_PREFIX
+  required: true
+  value: system-sidekiq
+- description: Schedule for rsync job in Cron Format
+  name: SOURCE_DIR
+  required: true
+  value: /opt/system/public/system/
+

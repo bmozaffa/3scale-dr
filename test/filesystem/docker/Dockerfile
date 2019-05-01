@@ -10,6 +10,10 @@ LABEL name="oc-centos7" \
       summary="Container with OpenShift client" \
       description="Basic Cent OS image with OpenShift Client installed and scripts to perform remote rsync from the pod"
 
+### Refresh all packages for security patches
+
+RUN yum  update -y && yum clean all
+
 ### Setup user for build execution and application runtime
 ENV APP_ROOT=/opt/app-root \
     USER_NAME=default \
@@ -17,6 +21,7 @@ ENV APP_ROOT=/opt/app-root \
 ENV APP_HOME=${APP_ROOT}/src  PATH=$PATH:${APP_ROOT}/bin
 RUN mkdir -p ${APP_HOME}
 COPY bin/ ${APP_ROOT}/bin/
+
 RUN chmod -R ug+x ${APP_ROOT}/bin && sync && \
     useradd -l -u ${USER_UID} -r -g 0 -d ${APP_ROOT} -s /sbin/nologin -c "${USER_NAME} user" ${USER_NAME} && \
     chown -R ${USER_UID}:0 ${APP_ROOT} && \

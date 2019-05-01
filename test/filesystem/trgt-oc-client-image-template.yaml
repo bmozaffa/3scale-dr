@@ -1,0 +1,56 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  annotations:
+    description: OC Client docker image
+  creationTimestamp: null
+  name: oc-client
+objects:
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/display-name: OC client
+    creationTimestamp: null
+    name: oc-client
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/display-name: AMP Zync (latest)
+      from:
+        kind: ImageStreamTag
+        name: ${OC_IMAGE_TAG}
+      generation: null
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: ""
+    - annotations:
+        openshift.io/display-name: AMP Zync ${OC_IMAGE_TAG}
+      from:
+        kind: DockerImage
+        name: ${OC_CLIENT_IMAGE}
+      generation: null
+      importPolicy:
+        insecure: ${{IMAGESTREAM_TAG_IMPORT_INSECURE}}
+      name: ${OC_IMAGE_TAG}
+      referencePolicy:
+        type: ""
+  status:
+    dockerImageRepository: ""
+parameters:
+- description: Image tag 
+  name: OC_IMAGE_TAG
+  required: true
+  value: 0.1.1
+- description: OC Client image name and repository
+  name: OC_CLIENT_IMAGE
+  required: true
+  value: quay.io/mmikhail/oc-centos7:0.1.1
+- description: Set to true if the server may bypass certificate verification or connect
+    directly over HTTP during image import.
+  name: IMAGESTREAM_TAG_IMPORT_INSECURE
+  required: true
+  value: "false"

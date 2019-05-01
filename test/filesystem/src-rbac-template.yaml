@@ -1,0 +1,41 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+metadata:
+  annotations:
+    description: System Account for Remote rsync
+  creationTimestamp: null
+  name: rsh-sys-account-rbac
+objects:
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: Role
+  metadata:
+    name: ${RSH_SYSTEM_ACCOUNT}
+  rules:
+  - apiGroups:
+    - ""
+    attributeRestrictions: null
+    resources:
+    - pods
+    - pods/attach
+    - pods/exec
+    verbs: ["*"]
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: ${RSH_SYSTEM_ACCOUNT}
+- apiVersion: rbac.authorization.k8s.io/v1
+  kind: RoleBinding
+  metadata:
+    name: ${RSH_SYSTEM_ACCOUNT}
+  subjects:
+  - kind: ServiceAccount
+    name: ${RSH_SYSTEM_ACCOUNT}
+  roleRef:
+    kind: Role
+    name: ${RSH_SYSTEM_ACCOUNT}
+    apiGroup: rbac.authorization.k8s.io
+parameters:
+- description: System account name 
+  name: RSH_SYSTEM_ACCOUNT
+  required: true
+  value: dr-filesystem-repl
