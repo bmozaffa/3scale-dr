@@ -1,0 +1,33 @@
+# Section for target Redis DB's should be populated for both primary and replica
+[TargetDB]
+clusterurl=https://<your redis enterprise api url>
+
+#Redis enterprise cluster id/password
+
+adminuser=admin
+adminpassword=xxxxxx
+
+# Password for the Redis DB if multiple db created password will be the same
+
+userpassword=redispassword
+
+# Client certificate to access DB. If db_type is primary it should be replica
+# public  certificate 
+certfilename=/home/mmikhail/work/projects/research/ssl/mm_cert.pem
+
+# Section for source database when setting up replica db
+[SourceDB]
+adminuser=admin
+password=xxxxxxxxxxx
+certfilename=/home/mmikhail/work/projects/research/ssl/redistest_proxy_cert.pem
+clusterurl=https://<source redis cluster url>
+
+#Base domain for source redis DB url's
+domain=app.yourdomain.com
+
+[Common]
+# List of databases to be created in the same cluster. For primary databases 
+# specify only one name for each db , eg. db1,db2. For replica it would be list
+# of pairs where first name is replica db name and second is a source 
+
+databases=redisdb21|redisdb1,redisdb22|redisdb2

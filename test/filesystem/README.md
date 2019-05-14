@@ -55,7 +55,7 @@ where
 
 > AuthToken- token for system account created in previous section 
 
-2 - Using template `trgt-oc-client-image-template.yaml` create image stream to pull image with oc client see ["Using or building oc client image"](#using-or- building-oc-client-image) section
+2 - Using template `trgt-oc-client-image-template.yaml` create image stream to pull image with oc client see [Using or building oc client image] (#using-or-building-oc-client-image) section
 
 ```
 oc process -f trgt-oc-client-image-template.yaml |oc apply -f -

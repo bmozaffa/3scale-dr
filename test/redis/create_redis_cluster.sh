@@ -51,6 +51,7 @@ ret=$? ; error_exit "ERROR:$LINENO:Applying Security context to setvice account 
 #Name of redis cluster 
 CLUSTER_NAME=redis-ent-cluster
 
+#Create cluster with persistent storage
 #redis_cluster=${CLUSTER_NAME}.yaml
 
 #Create cluster without persistence 
